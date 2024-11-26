@@ -13,4 +13,4 @@ export default defineNuxtConfig({
   ],
   css: ['~/assets/css/tailwind.css'], // Include Tailwind CSS file
   components: true, // Automatically register components
-});
+})
