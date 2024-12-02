@@ -1,102 +1,103 @@
+// server/api/submit-form.post.js
 export default defineEventHandler(async (event) => {
   try {
     const body = await readBody(event);
-    const { email, page_slug } = body;
+    const { email, firstName, lastName, page_slug } = body;
 
-    console.log('Received form submission:', { email, page_slug });
+    console.log('Received form submission:', { email, firstName, lastName, page_slug });
 
-    // Initialize segment data with defaults
-    let audience = 'ADULT';
-    let testType = 'NO_TEST';
-    let skillFocus = 'GENERAL';
+    // Default audience and test type
+    let audience = 'GENERAL_ADULT';
+    let testType = 'GENERAL_ADULT';
 
     // Parse the slug segments
-    if (page_slug.startsWith('freebies/')) {
-      // Remove 'freebies/' and split the remaining path
+    if (page_slug?.startsWith('freebies/')) {
       const segments = page_slug.replace('freebies/', '').split('-');
-      
-      // Map audience
+
       if (segments[0] === 'kids') {
-        audience = 'CHILD';
+        audience = 'GENERAL_CHILD';
       }
 
-      // Map test type
       const testTypes = {
-        'notest': 'NO_TEST',
         'ielts': 'IELTS',
         'pet': 'PET',
         'ket': 'KET',
         'fce': 'FCE',
         'cae': 'CAE',
         'toefl': 'TOEFL',
-        'duolingo': 'DUOLINGO'
+        'duolingo': 'DUOLINGO',
       };
-      testType = testTypes[segments[1]] || 'NO_TEST';
-
-      // Map skill focus
-      const skills = {
-        'speaking': 'SPEAKING',
-        'listening': 'LISTENING',
-        'reading': 'READING',
-        'writing': 'WRITING',
-        'general': 'GENERAL'
-      };
-      skillFocus = skills[segments[2]] || 'GENERAL';
+      testType = testTypes[segments[1]] || audience;
     }
 
-    // Create combined segment identifier
-    const segment = `${audience}_${testType}_${skillFocus}`;
+    console.log('Detected segments:', { slug: page_slug, audience, testType });
 
-    console.log('Detected segments:', {
-      slug: page_slug,
-      audience,
-      testType,
-      skillFocus,
-      segment
-    });
-
-    const emailData = {
-      from: 'Sean <sean@luenglish.com>',
-      to: email,
-      subject: 'Welcome to LU English!',
-      html: `<h1>Thank you for joining us!</h1>
-             <p>We're excited to help you improve your English skills.</p>`,
-      headers: {
-        'X-Lead-Source': page_slug,
-        'X-Lead-Segment': segment,
-        'X-Audience': audience,
-        'X-Test-Type': testType,
-        'X-Skill-Focus': skillFocus
-      },
-      metadata: {
-        source_page: page_slug,
-        segment: segment,
-        audience: audience,
-        test_type: testType,
-        skill_focus: skillFocus,
-        signup_date: new Date().toISOString()
-      }
+    // Get audience token from environment variables
+    const audienceTokens = {
+      'IELTS': process.env.NUXT_ENV_EMAILIT_IELTS_TOKEN,
+      'PET': process.env.NUXT_ENV_EMAILIT_PET_TOKEN,
+      'KET': process.env.NUXT_ENV_EMAILIT_KET_TOKEN,
+      'FCE': process.env.NUXT_ENV_EMAILIT_FCE_TOKEN,
+      'CAE': process.env.NUXT_ENV_EMAILIT_CAE_TOKEN,
+      'TOEFL': process.env.NUXT_ENV_EMAILIT_TOEFL_TOKEN,
+      'DUOLINGO': process.env.NUXT_ENV_EMAILIT_DUOLINGO_TOKEN,
+      'GENERAL_ADULT': process.env.NUXT_ENV_EMAILIT_GENERAL_ADULT_TOKEN,
+      'GENERAL_CHILD': process.env.NUXT_ENV_EMAILIT_GENERAL_CHILD_TOKEN,
     };
 
-    const response = await $fetch('https://api.emailit.com/v1/emails', {
+    const audienceToken = audienceTokens[testType] || process.env.NUXT_ENV_EMAILIT_DEFAULT_TOKEN;
+
+    if (!audienceToken) {
+      throw new Error(`No token found for audience type: ${testType}`);
+    }
+
+    // Construct API URL
+    const apiUrl = `${process.env.NUXT_ENV_EMAILIT_API_BASE_URL}/subscribe/${audienceToken}`;
+    console.log('API URL:', apiUrl);
+
+    // Make the API request
+    const emailitResponse = await $fetch(apiUrl, {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer em_qKuRKS1TkRZ4vgbpfWB1O3xgAlj3cv35`,
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${process.env.NUXT_ENV_EMAILIT_API_KEY}`, // Add Bearer token
       },
-      body: JSON.stringify(emailData)
+      body: {
+        email: email,
+        first_name: firstName || '',
+        last_name: lastName || '',
+        custom_fields: {
+          source_page: page_slug,
+        },
+      },
     });
+
+    console.log('EmailIt API response:', emailitResponse);
 
     return {
       success: true,
-      message: `Form submitted successfully for ${email} from page ${page_slug}`
+      message: `Form submitted successfully for ${email} from page ${page_slug}`,
     };
-
   } catch (error) {
-    console.error('Form submission error:', error);
+    console.error('Form submission error:', error.message);
+
+    // Handle specific error cases
+    if (error.response?.status >= 400 && error.response?.status < 500) {
+      return {
+        success: false,
+        error: `Client error: ${error.response?.status} - ${error.response?.data?.message || error.message}`,
+      };
+    } else if (error.response?.status >= 500) {
+      return {
+        success: false,
+        error: 'Server error. Please try again later.',
+      };
+    }
+
+    // Fallback for unexpected errors
     return {
       success: false,
-      error: error.message || 'Failed to send email'
+      error: error.message || 'An unexpected error occurred.',
     };
   }
 });

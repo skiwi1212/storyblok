@@ -1,9 +1,27 @@
 <template>
   <div class="lead-capture-form">
-    <h2 class="form-heading">{{ blok?.heading || 'Default Heading' }}</h2>
-    <p class="form-description">{{ blok?.description || 'Default Description' }}</p>
+    <h2 class="form-heading">{{ blok.heading }}</h2>
+    <p class="form-description">{{ blok.description }}</p>
 
     <form @submit.prevent="submitForm" class="form-container">
+      <div class="input-group">
+        <input
+          type="text"
+          v-model="formData.firstName"
+          placeholder="Enter your first name"
+          required
+          class="email-input"
+        />
+      </div>
+      <div class="input-group">
+        <input
+          type="text"
+          v-model="formData.lastName"
+          placeholder="Enter your last name"
+          required
+          class="email-input"
+        />
+      </div>
       <div class="input-group">
         <input
           type="email"
@@ -15,12 +33,12 @@
       </div>
       <input type="hidden" v-model="formData.page_slug" />
       <button type="submit" :disabled="isSubmitting" class="submit-button">
-        {{ isSubmitting ? 'Submitting...' : (blok?.submitbuttontext || 'Submit') }}
+        {{ isSubmitting ? 'Submitting...' : blok.submitbuttontext }}
       </button>
     </form>
 
     <p v-if="formSubmitted" class="success-message">
-      {{ blok?.successmessage || 'Thank you for submitting!' }}
+      {{ blok.successmessage }}
     </p>
     <p v-if="error" class="error-message">
       {{ error }}
@@ -37,6 +55,8 @@ const route = useRoute()
 const pageSlug = route.params.slug ? route.params.slug.join('/') : 'home'
 
 const formData = reactive({
+  firstName: '',
+  lastName: '',
   email: '',
   page_slug: pageSlug,
 })
@@ -57,6 +77,8 @@ const submitForm = async () => {
 
     if (response.success) {
       formSubmitted.value = true
+      formData.firstName = '' // Clear the form
+      formData.lastName = '' // Clear the form
       formData.email = '' // Clear the form
     } else {
       error.value = response.error || 'There was an error submitting the form. Please try again.'
