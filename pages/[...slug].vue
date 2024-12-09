@@ -1,25 +1,20 @@
 <script setup>
 const { slug } = useRoute().params
 
-// Added: Define the relations to resolve
 const resolveRelations = ['popular-articles.articles']
 
-// Updated: Fetch the story with resolved relations
 const story = await useAsyncStoryblok(
   slug && slug.length > 0 ? slug.join('/') : 'home',
   {
-    version: 'draft', // Existing option
-    resolve_relations: resolveRelations // Added option
+    version: 'draft',
+    resolve_relations: resolveRelations
   },
   {
-    resolveRelations // Added for the Storyblok Bridge
+    resolveRelations
   }
 )
 </script>
 
 <template>
-  <div>
-    <!-- Render Storyblok components -->
-    <StoryblokComponent v-if="story" :blok="story.content" />
-  </div>
+  <StoryblokComponent v-if="story" :blok="story.content" />
 </template>
