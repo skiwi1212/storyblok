@@ -2,8 +2,12 @@
 defineProps({
   blok: {
     type: Object,
-    default: () => ({})  // Provide a default empty object
+    default: () => ({})
   }
+})
+
+defineOptions({
+  name: 'sitefooter'
 })
 </script>
 
