@@ -1,4 +1,3 @@
-# storyblok/Article.vue
 <template>
   <div v-editable="blok">
     <!-- Full width header image -->
@@ -21,18 +20,18 @@
           <div class="sticky top-4 bg-gray-50 p-4 rounded-lg space-y-6">
             <!-- Quick Overview Section -->
             <div class="space-y-4">
-              <h3 class="font-bold text-lg">Quick Overview</h3>
-              <p class="text-gray-600">{{ blok.teaser }}</p>
+              <h3 class="font-bold text-lg break-words overflow-wrap-anywhere">Quick Overview</h3>
+              <p class="text-gray-600 break-words overflow-wrap-anywhere">{{ blok.teaser }}</p>
             </div>
 
             <!-- Categories Section -->
             <div v-if="blok.categories?.length" class="space-y-4">
-              <h3 class="font-bold text-lg">Categories</h3>
+              <h3 class="font-bold text-lg break-words overflow-wrap-anywhere">Categories</h3>
               <div class="flex flex-wrap gap-2">
                 <span 
                   v-for="category in blok.categories" 
                   :key="category"
-                  class="bg-[#50b0ae] text-white px-3 py-1 rounded-full text-sm"
+                  class="bg-[#50b0ae] text-white px-3 py-1 rounded-full text-sm break-words max-w-full"
                 >
                   {{ formatLabel(category) }}
                 </span>
@@ -41,12 +40,12 @@
 
             <!-- Tags Section -->
             <div v-if="blok.tags?.length" class="space-y-4">
-              <h3 class="font-bold text-lg">Tags</h3>
+              <h3 class="font-bold text-lg break-words overflow-wrap-anywhere">Tags</h3>
               <div class="flex flex-wrap gap-2">
                 <span 
                   v-for="tag in blok.tags" 
                   :key="tag"
-                  class="bg-gray-200 text-gray-700 px-3 py-1 rounded-full text-sm"
+                  class="bg-gray-200 text-gray-700 px-3 py-1 rounded-full text-sm break-words max-w-full"
                 >
                   {{ formatLabel(tag) }}
                 </span>
@@ -57,8 +56,8 @@
 
         <!-- Main content - 80% -->
         <div class="w-full md:w-4/5">
-          <h1 class="text-6xl text-[#50b0ae] font-bold mt-12 mb-4">{{ blok.title }}</h1>
-          <div v-html="resolvedRichText" class="prose lg:prose-xl max-w-none"></div>
+          <h1 class="text-6xl text-[#50b0ae] font-bold mt-12 mb-4 break-words overflow-wrap-anywhere">{{ blok.title }}</h1>
+          <div v-html="resolvedRichText" class="prose lg:prose-xl max-w-none break-words overflow-wrap-anywhere"></div>
         </div>
       </div>
 
@@ -122,7 +121,7 @@ const optimizedImageSrc = computed(() => {
   url.searchParams.set('quality', 80)
   url.searchParams.set('format', 'webp')
 
-  return url.toString()
+  return url.toString();
 })
 
 const optimizedWidth = computed(() => {

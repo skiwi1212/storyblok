@@ -75,15 +75,15 @@ onMounted(() => {
         <!-- Sidebar - 20% -->
         <aside class="w-full lg:w-1/5">
           <div class="bg-gray-50 p-4 rounded-lg sticky top-4">
-            <h2 class="text-xl font-bold mb-4">{{ blok.sidebar_title }}</h2>
+            <h2 class="text-xl font-bold mb-4 break-words overflow-wrap-anywhere">{{ blok.sidebar_title }}</h2>
             <!-- Add your sidebar content here -->
           </div>
         </aside>
 
         <!-- Main content - 80% -->
         <div class="w-full lg:w-4/5">
-          <h1 class="text-4xl font-bold mb-6">{{ blok.title }}</h1>
-          <div class="prose lg:prose-xl max-w-none">
+          <h1 class="text-4xl font-bold mb-6 break-words overflow-wrap-anywhere">{{ blok.title }}</h1>
+          <div class="prose lg:prose-xl max-w-none break-words overflow-wrap-anywhere">
             {{ blok.content }}
           </div>
         </div>
