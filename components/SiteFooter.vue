@@ -12,44 +12,58 @@ defineOptions({
 </script>
 
 <template>
-  <footer v-if="blok && Object.keys(blok).length > 0" class="bg-gray-900 text-white py-12">
-    <div class="container mx-auto px-4">
+  <footer v-if="blok && Object.keys(blok).length > 0" class="bg-gray-900 text-gray-300 py-12">
+    <div class="container mx-auto px-4 md:px-6 lg:px-8">
       <!-- Company Info Section -->
       <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
         <!-- Contact Info -->
         <div>
-          <h3 class="font-bold mb-4">{{ blok.company_name }}</h3>
-          <p class="mb-2"><a :href="'mailto:' + blok.email1" class="text-blue-400 hover:text-blue-300">{{ blok.email1 }}</a></p>
-          <p class="mb-2"><a :href="'mailto:' + blok.email2" class="text-blue-400 hover:text-blue-300">{{ blok.email2 }}</a></p>
+          <h3 class="text-white font-bold mb-4">{{ blok.company_name }}</h3>
+          <p class="mb-2">
+            <a :href="'mailto:' + blok.email1" class="text-gray-400 hover:text-blue-400 transition-colors">
+              {{ blok.email1 }}
+            </a>
+          </p>
+          <p class="mb-2">
+            <a :href="'mailto:' + blok.email2" class="text-gray-400 hover:text-blue-400 transition-colors">
+              {{ blok.email2 }}
+            </a>
+          </p>
           <p class="whitespace-pre-wrap text-gray-400">{{ blok.address }}</p>
         </div>
 
         <!-- Courses Links -->
         <div>
-          <h3 class="font-bold text-blue-400 mb-4">Courses</h3>
+          <h3 class="text-white font-bold mb-4">Courses</h3>
           <ul class="space-y-2">
             <li v-for="link in blok.courses_links" :key="link._uid">
-              <StoryblokComponent :blok="link" />
+              <StoryblokComponent 
+                :blok="{ ...link, class: 'text-gray-400 hover:text-blue-400 transition-colors' }"
+              />
             </li>
           </ul>
         </div>
 
         <!-- Resources Links -->
         <div>
-          <h3 class="font-bold text-blue-400 mb-4">Resources</h3>
+          <h3 class="text-white font-bold mb-4">Resources</h3>
           <ul class="space-y-2">
             <li v-for="link in blok.resources_links" :key="link._uid">
-              <StoryblokComponent :blok="link" />
+              <StoryblokComponent 
+                :blok="{ ...link, class: 'text-gray-400 hover:text-blue-400 transition-colors' }"
+              />
             </li>
           </ul>
         </div>
 
         <!-- Company Links -->
         <div>
-          <h3 class="font-bold text-blue-400 mb-4">Company</h3>
+          <h3 class="text-white font-bold mb-4">Company</h3>
           <ul class="space-y-2">
             <li v-for="link in blok.company_links" :key="link._uid">
-              <StoryblokComponent :blok="link" />
+              <StoryblokComponent 
+                :blok="{ ...link, class: 'text-gray-400 hover:text-blue-400 transition-colors' }"
+              />
             </li>
           </ul>
         </div>
@@ -57,7 +71,7 @@ defineOptions({
 
       <!-- Company Description -->
       <div class="mt-12">
-        <p class="text-gray-400">{{ blok.company_description }}</p>
+        <p class="text-gray-300">{{ blok.company_description }}</p>
       </div>
 
       <!-- Footer Text -->
